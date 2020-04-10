@@ -24,7 +24,10 @@
       "./native/secp256k1/src",
       "<!(node -e \"require('nan')\")"
     ],
-    "defines": [],
+    "defines": [
+      "ECMULT_WINDOW_SIZE=15",
+      "ECMULT_GEN_PREC_BITS=4"
+    ],
     "cflags": [
       "-Wall",
       "-Wno-maybe-uninitialized",
