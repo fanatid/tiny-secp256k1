@@ -1,3 +1,11 @@
+#![no_std]
+#![feature(core_intrinsics)]
+
+#[panic_handler]
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    core::intrinsics::abort()
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 compile_error!("Only `wasm32` target_arch is supported.");
 
@@ -76,25 +84,27 @@ fn initialize_context_seed() {
     unsafe {
         for offset in (0..8).map(|v| v * 4) {
             let value = generate_int32();
-            let bytes: [u8; 4] = std::mem::transmute(value);
+            let bytes: [u8; 4] = core::mem::transmute(value);
             CONTEXT_SEED[offset..offset + 4].copy_from_slice(&bytes);
         }
     }
 }
 
 fn get_context() -> *const Context {
-    static mut CONTEXT: *const Context = std::ptr::null();
-    static ONCE: std::sync::Once = std::sync::Once::new();
-    ONCE.call_once(|| unsafe {
-        initialize_context_seed();
-        CONTEXT = Context::create(
-            CONTEXT_BUFFER.as_mut_ptr(),
-            CONTEXT_BUFFER.len(),
-            CONTEXT_SEED.as_ptr(),
-        );
-        CONTEXT_SEED.fill(0);
-    });
-    unsafe { CONTEXT }
+    static mut CONTEXT: *const Context = core::ptr::null();
+    unsafe {
+        if CONTEXT_SEED[0] == 0 {
+            initialize_context_seed();
+            CONTEXT = Context::create(
+                CONTEXT_BUFFER.as_mut_ptr(),
+                CONTEXT_BUFFER.len(),
+                CONTEXT_SEED.as_ptr(),
+            );
+            CONTEXT_SEED[0] = 1;
+            CONTEXT_SEED[1..].fill(0);
+        }
+        CONTEXT
+    }
 }
 
 unsafe fn pubkey_parse(input: *const u8, inputlen: usize) -> InvalidInputResult<PublicKey> {
@@ -258,7 +268,7 @@ pub extern "C" fn sign(extra_data: i32) {
     unsafe {
         let mut sig = Signature::new();
         let noncedata = if extra_data == 0 {
-            std::ptr::null()
+            core::ptr::null()
         } else {
             EXTRA_DATA_INPUT.as_ptr()
         } as *const c_void;
