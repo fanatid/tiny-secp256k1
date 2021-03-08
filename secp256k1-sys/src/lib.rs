@@ -91,92 +91,92 @@ extern "C" {
         flags: c_uint,
     ) -> *mut Context;
 
-    pub fn secp256k1_context_randomize(cx: *mut Context, seed32: *const c_uchar) -> c_int;
+    pub fn secp256k1_context_randomize(ctx: *mut Context, seed32: *const c_uchar) -> c_int;
 
     // Public Key
     pub fn secp256k1_ec_pubkey_parse(
-        cx: *const Context,
-        pk: *mut PublicKey,
+        ctx: *const Context,
+        pubkey: *mut PublicKey,
         input: *const c_uchar,
-        in_len: size_t,
+        inputlen: size_t,
     ) -> c_int;
 
     pub fn secp256k1_ec_pubkey_serialize(
-        cx: *const Context,
+        ctx: *const Context,
         output: *mut c_uchar,
-        out_len: *mut size_t,
-        pk: *const PublicKey,
-        compressed: c_uint,
+        outputlen: *mut size_t,
+        pubkey: *const PublicKey,
+        flags: c_uint,
     ) -> c_int;
 
     pub fn secp256k1_ec_pubkey_combine(
-        cx: *const Context,
+        ctx: *const Context,
         out: *mut PublicKey,
         ins: *const *const PublicKey,
         n: c_int,
     ) -> c_int;
 
     pub fn secp256k1_ec_pubkey_create(
-        cx: *const Context,
-        pk: *mut PublicKey,
-        sk: *const c_uchar,
+        ctx: *const Context,
+        pubkey: *mut PublicKey,
+        seckey: *const c_uchar,
     ) -> c_int;
 
     pub fn secp256k1_ec_pubkey_tweak_add(
-        cx: *const Context,
-        pk: *mut PublicKey,
-        tweak: *const c_uchar,
+        ctx: *const Context,
+        pubkey: *mut PublicKey,
+        tweak32: *const c_uchar,
     ) -> c_int;
 
     pub fn secp256k1_ec_pubkey_tweak_mul(
-        cx: *const Context,
-        pk: *mut PublicKey,
-        tweak: *const c_uchar,
+        ctx: *const Context,
+        pubkey: *mut PublicKey,
+        tweak32: *const c_uchar,
     ) -> c_int;
 
     // Private Key
-    pub fn secp256k1_ec_seckey_negate(cx: *const Context, sk: *mut c_uchar) -> c_int;
+    pub fn secp256k1_ec_seckey_negate(ctx: *const Context, seckey: *mut c_uchar) -> c_int;
 
     pub fn secp256k1_ec_seckey_tweak_add(
-        cx: *const Context,
-        sk: *mut c_uchar,
-        tweak: *const c_uchar,
+        ctx: *const Context,
+        seckey: *mut c_uchar,
+        tweak32: *const c_uchar,
     ) -> c_int;
 
     // Signature
     pub fn secp256k1_ecdsa_signature_parse_compact(
-        cx: *const Context,
+        ctx: *const Context,
         sig: *mut Signature,
         input64: *const c_uchar,
     ) -> c_int;
 
     pub fn secp256k1_ecdsa_signature_serialize_compact(
-        cx: *const Context,
+        ctx: *const Context,
         output64: *mut c_uchar,
         sig: *const Signature,
     ) -> c_int;
 
     pub fn secp256k1_ecdsa_signature_normalize(
-        cx: *const Context,
-        out_sig: *mut Signature,
-        in_sig: *const Signature,
+        ctx: *const Context,
+        sigout: *mut Signature,
+        sigin: *const Signature,
     ) -> c_int;
 
     // ECDSA
     pub fn secp256k1_ecdsa_sign(
-        cx: *const Context,
+        ctx: *const Context,
         sig: *mut Signature,
-        msg32: *const c_uchar,
-        sk: *const c_uchar,
-        noncefn: NonceFn,
-        noncedata: *const c_void,
+        msghash32: *const c_uchar,
+        seckey: *const c_uchar,
+        noncefp: NonceFn,
+        ndata: *const c_void,
     ) -> c_int;
 
     pub fn secp256k1_ecdsa_verify(
-        cx: *const Context,
+        ctx: *const Context,
         sig: *const Signature,
-        msg32: *const c_uchar,
-        pk: *const PublicKey,
+        msghash32: *const c_uchar,
+        pubkey: *const PublicKey,
     ) -> c_int;
 }
 
