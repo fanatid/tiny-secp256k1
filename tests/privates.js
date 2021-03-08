@@ -4,7 +4,7 @@ const fprivates = require("./fixtures/privates.json");
 
 function test(binding) {
   tape("isPrivate", (t) => {
-    for (f of fprivates.valid.isPrivate) {
+    for (const f of fprivates.valid.isPrivate) {
       const d = fromHex(f.d);
 
       t.equal(
@@ -18,7 +18,7 @@ function test(binding) {
   });
 
   tape("privateAdd", (t) => {
-    for (f of fprivates.valid.privateAdd) {
+    for (const f of fprivates.valid.privateAdd) {
       const d = fromHex(f.d);
       const tweak = fromHex(f.tweak);
       const expected = f.expected ? fromHex(f.expected) : null;
@@ -30,7 +30,7 @@ function test(binding) {
       t.same(binding.privateAdd(d, tweak), expected, description);
     }
 
-    for (f of fprivates.invalid.privateAdd) {
+    for (const f of fprivates.invalid.privateAdd) {
       const d = fromHex(f.d);
       const tweak = fromHex(f.tweak);
 
@@ -47,7 +47,7 @@ function test(binding) {
   });
 
   tape("privateSub", (t) => {
-    for (f of fprivates.valid.privateSub) {
+    for (const f of fprivates.valid.privateSub) {
       const d = fromHex(f.d);
       const tweak = fromHex(f.tweak);
       const expected = f.expected ? fromHex(f.expected) : null;
@@ -59,7 +59,7 @@ function test(binding) {
       t.same(binding.privateSub(d, tweak), expected, description);
     }
 
-    for (f of fprivates.invalid.privateSub) {
+    for (const f of fprivates.invalid.privateSub) {
       const d = fromHex(f.d);
       const tweak = fromHex(f.tweak);
 

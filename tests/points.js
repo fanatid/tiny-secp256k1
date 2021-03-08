@@ -4,7 +4,7 @@ const fpoints = require("./fixtures/points.json");
 
 function test(binding) {
   tape("isPoint", (t) => {
-    for (f of fpoints.valid.isPoint) {
+    for (const f of fpoints.valid.isPoint) {
       const p = fromHex(f.P);
       t.equal(
         binding.isPoint(p),
@@ -17,7 +17,7 @@ function test(binding) {
   });
 
   tape("isPointCompressed", (t) => {
-    for (f of fpoints.valid.isPoint) {
+    for (const f of fpoints.valid.isPoint) {
       if (!f.expected) continue;
       const p = fromHex(f.P);
       const e = p.length === 33;
@@ -32,7 +32,7 @@ function test(binding) {
   });
 
   tape("pointAdd", (t) => {
-    for (f of fpoints.valid.pointAdd) {
+    for (const f of fpoints.valid.pointAdd) {
       const p = fromHex(f.P);
       const q = fromHex(f.Q);
       const expected = f.expected ? fromHex(f.expected) : null;
@@ -52,7 +52,7 @@ function test(binding) {
       );
     }
 
-    for (f of fpoints.invalid.pointAdd) {
+    for (const f of fpoints.invalid.pointAdd) {
       const p = fromHex(f.P);
       const q = fromHex(f.Q);
       t.throws(
@@ -68,7 +68,7 @@ function test(binding) {
   });
 
   tape("pointAddScalar", (t) => {
-    for (f of fpoints.valid.pointAddScalar) {
+    for (const f of fpoints.valid.pointAddScalar) {
       const p = fromHex(f.P);
       const d = fromHex(f.d);
       const expected = f.expected ? fromHex(f.expected) : null;
@@ -88,7 +88,7 @@ function test(binding) {
       );
     }
 
-    for (f of fpoints.invalid.pointAddScalar) {
+    for (const f of fpoints.invalid.pointAddScalar) {
       const p = fromHex(f.P);
       const d = fromHex(f.d);
       t.throws(
@@ -104,7 +104,7 @@ function test(binding) {
   });
 
   tape("pointCompress", (t) => {
-    for (f of fpoints.valid.pointCompress) {
+    for (const f of fpoints.valid.pointCompress) {
       const p = fromHex(f.P);
       const expected = fromHex(f.expected);
       if (f.noarg) {
@@ -114,7 +114,7 @@ function test(binding) {
       }
     }
 
-    for (f of fpoints.invalid.pointCompress) {
+    for (const f of fpoints.invalid.pointCompress) {
       const p = fromHex(f.P);
       t.throws(
         () => {
@@ -129,7 +129,7 @@ function test(binding) {
   });
 
   tape("pointFromScalar", (t) => {
-    for (f of fpoints.valid.pointFromScalar) {
+    for (const f of fpoints.valid.pointFromScalar) {
       const d = fromHex(f.d);
       const expected = fromHex(f.expected);
       let description = `${f.d} * G = ${f.expected}`;
@@ -148,7 +148,7 @@ function test(binding) {
       );
     }
 
-    for (f of fpoints.invalid.pointFromScalar) {
+    for (const f of fpoints.invalid.pointFromScalar) {
       const d = fromHex(f.d);
       t.throws(
         () => {
@@ -163,7 +163,7 @@ function test(binding) {
   });
 
   tape("pointMultiply", (t) => {
-    for (f of fpoints.valid.pointMultiply) {
+    for (const f of fpoints.valid.pointMultiply) {
       const p = fromHex(f.P);
       const d = fromHex(f.d);
       const expected = f.expected ? fromHex(f.expected) : null;
@@ -183,7 +183,7 @@ function test(binding) {
       );
     }
 
-    for (f of fpoints.invalid.pointMultiply) {
+    for (const f of fpoints.invalid.pointMultiply) {
       const p = fromHex(f.P);
       const d = fromHex(f.d);
       t.throws(

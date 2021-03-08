@@ -31,7 +31,7 @@ function corrupt(x) {
 
 function test(binding) {
   tape("sign", (t) => {
-    for (f of fecdsa.valid) {
+    for (const f of fecdsa.valid) {
       const d = fromHex(f.d);
       const m = fromHex(f.m);
       const expected = fromHex(f.signature);
@@ -43,7 +43,7 @@ function test(binding) {
       );
     }
 
-    for (f of fecdsa.extraEntropy) {
+    for (const f of fecdsa.extraEntropy) {
       const d = fromHex(f.d);
       const m = fromHex(f.m);
       const expectedSig = fromHex(f.signature);
@@ -95,7 +95,7 @@ function test(binding) {
       );
     }
 
-    for (f of fecdsa.invalid.sign) {
+    for (const f of fecdsa.invalid.sign) {
       const d = fromHex(f.d);
       const m = fromHex(f.m);
 
@@ -112,7 +112,7 @@ function test(binding) {
   });
 
   tape("verify", (t) => {
-    for (f of fecdsa.valid) {
+    for (const f of fecdsa.valid) {
       const d = fromHex(f.d);
       const Q = binding.pointFromScalar(d, true);
       const Qu = binding.pointFromScalar(d, false);
@@ -142,7 +142,7 @@ function test(binding) {
       );
     }
 
-    for (f of fecdsa.invalid.verify) {
+    for (const f of fecdsa.invalid.verify) {
       const Q = fromHex(f.Q);
       const m = fromHex(f.m);
       const signature = fromHex(f.signature);
