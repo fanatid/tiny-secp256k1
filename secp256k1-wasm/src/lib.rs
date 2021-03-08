@@ -1,3 +1,6 @@
+#[cfg(not(target_arch = "wasm32"))]
+compile_error!("Only `wasm32` target_arch is supported.");
+
 use secp256k1_sys::{
     c_void, secp256k1_context_no_precomp, secp256k1_ec_pubkey_combine, secp256k1_ec_pubkey_create,
     secp256k1_ec_pubkey_parse, secp256k1_ec_pubkey_serialize, secp256k1_ec_pubkey_tweak_add,
