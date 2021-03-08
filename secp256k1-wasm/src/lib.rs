@@ -1,13 +1,11 @@
 use secp256k1_sys::{
-    secp256k1_context_no_precomp, secp256k1_context_preallocated_create,
-    secp256k1_context_preallocated_size, secp256k1_context_randomize, secp256k1_ec_pubkey_combine,
-    secp256k1_ec_pubkey_create, secp256k1_ec_pubkey_parse, secp256k1_ec_pubkey_serialize,
-    secp256k1_ec_pubkey_tweak_add, secp256k1_ec_pubkey_tweak_mul, secp256k1_ec_seckey_negate,
-    secp256k1_ec_seckey_tweak_add, secp256k1_ecdsa_sign, secp256k1_ecdsa_signature_normalize,
+    c_void, secp256k1_context_no_precomp, secp256k1_ec_pubkey_combine, secp256k1_ec_pubkey_create,
+    secp256k1_ec_pubkey_parse, secp256k1_ec_pubkey_serialize, secp256k1_ec_pubkey_tweak_add,
+    secp256k1_ec_pubkey_tweak_mul, secp256k1_ec_seckey_negate, secp256k1_ec_seckey_tweak_add,
+    secp256k1_ecdsa_sign, secp256k1_ecdsa_signature_normalize,
     secp256k1_ecdsa_signature_parse_compact, secp256k1_ecdsa_signature_serialize_compact,
-    secp256k1_ecdsa_verify, secp256k1_nonce_function_rfc6979, types::c_void, Context, PublicKey,
-    Signature, SECP256K1_SER_COMPRESSED, SECP256K1_SER_UNCOMPRESSED, SECP256K1_START_SIGN,
-    SECP256K1_START_VERIFY,
+    secp256k1_ecdsa_verify, secp256k1_nonce_function_rfc6979, Context, PublicKey, Signature,
+    SECP256K1_SER_COMPRESSED, SECP256K1_SER_UNCOMPRESSED,
 };
 
 #[link(wasm_import_module = "./validate_wasm.js")]
@@ -34,7 +32,7 @@ const ERROR_BAD_POINT: usize = 1;
 const ERROR_BAD_SIGNATURE: usize = 4;
 // const ERROR_BAD_EXTRA_DATA: usize = 5;
 
-static CONTEXT_BUFFER: [u8; 1114320] = [0; 1114320];
+static mut CONTEXT_BUFFER: [u8; 1114320] = [0; 1114320];
 static mut CONTEXT_SEED: [u8; 32] = [0; 32];
 
 #[no_mangle]
@@ -85,18 +83,13 @@ fn get_context() -> *const Context {
     static mut CONTEXT: *const Context = std::ptr::null();
     static ONCE: std::sync::Once = std::sync::Once::new();
     ONCE.call_once(|| unsafe {
-        let size =
-            secp256k1_context_preallocated_size(SECP256K1_START_SIGN | SECP256K1_START_VERIFY);
-        assert_eq!(size, CONTEXT_BUFFER.len());
-        let ctx = secp256k1_context_preallocated_create(
-            CONTEXT_BUFFER.as_ptr() as *mut c_void,
-            SECP256K1_START_SIGN | SECP256K1_START_VERIFY,
-        );
         initialize_context_seed();
-        let retcode = secp256k1_context_randomize(ctx, CONTEXT_SEED.as_ptr());
+        CONTEXT = Context::create(
+            CONTEXT_BUFFER.as_mut_ptr(),
+            CONTEXT_BUFFER.len(),
+            CONTEXT_SEED.as_ptr(),
+        );
         CONTEXT_SEED.fill(0);
-        assert_eq!(retcode, 1);
-        CONTEXT = ctx
     });
     unsafe { CONTEXT }
 }

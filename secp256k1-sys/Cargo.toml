@@ -1,0 +1,11 @@
+[package]
+name = "secp256k1-sys"
+version = "0.0.0"
+authors = ["Kirill Fomichev <fanatid@ya.ru>"]
+edition = "2018"
+description = "FFI for Pieter Wuille's `libsecp256k1` library."
+license = "MIT"
+publish = false
+
+[build-dependencies]
+cc = "1.0.67"

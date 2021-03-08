@@ -1,4 +1,4 @@
-build-wasm-cp = cp -f target/wasm32-unknown-unknown/$(1)/tiny_secp256k1_wasm.wasm lib/secp256k1.wasm
+build-wasm-cp = cp -f target/wasm32-unknown-unknown/$(1)/secp256k1_wasm.wasm lib/secp256k1.wasm
 
 build-wasm:
 	cargo build --target wasm32-unknown-unknown --release
