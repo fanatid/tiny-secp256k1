@@ -2,12 +2,13 @@
 #![allow(non_camel_case_types)]
 
 pub use core::ffi::c_void;
-use core::mem::MaybeUninit;
+use core::{mem::MaybeUninit, slice, str};
 
 pub type c_int = i32;
 pub type c_uchar = u8;
 pub type c_uint = u32;
 pub type size_t = usize;
+type c_char = i8;
 
 /// Flag for context to enable verification precomputation
 pub const SECP256K1_START_VERIFY: c_uint = 1 | (1 << 8);
@@ -177,4 +178,45 @@ extern "C" {
         msg32: *const c_uchar,
         pk: *const PublicKey,
     ) -> c_int;
+}
+
+unsafe fn strlen(mut str_ptr: *const c_char) -> usize {
+    let mut ctr = 0;
+    while *str_ptr != '\0' as c_char {
+        ctr += 1;
+        str_ptr = str_ptr.offset(1);
+    }
+    ctr
+}
+
+unsafe fn handle_callback_fn(prefix: &str, message: *const c_char) {
+    let msg_slice = slice::from_raw_parts(message as *const u8, strlen(message));
+    let msg = str::from_utf8_unchecked(msg_slice);
+    panic!("[libsecp256k1] {}: {}\n", prefix, msg);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn secp256k1_default_illegal_callback_fn(
+    message: *const c_char,
+    _data: *mut c_void,
+) {
+    handle_callback_fn("illegal argument", message)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn secp256k1_default_error_callback_fn(
+    message: *const c_char,
+    _data: *mut c_void,
+) {
+    handle_callback_fn("internal consistency check failed", message)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn malloc(_size: size_t) -> size_t {
+    panic!("malloc should not used")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn free(_size: size_t) -> size_t {
+    panic!("free should not used")
 }

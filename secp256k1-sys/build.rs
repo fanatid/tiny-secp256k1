@@ -7,7 +7,8 @@ fn main() {
         .include("secp256k1/include")
         .include("secp256k1/src")
         .flag_if_supported("-Wno-unused-function")
-        .flag_if_supported("-Wno-nonnull-compare");
+        .flag_if_supported("-Wno-nonnull-compare")
+        .define("USE_EXTERNAL_DEFAULT_CALLBACKS", "1");
 
     // Default in configuration file
     base_config
@@ -43,7 +44,6 @@ fn main() {
 
     // Header files. Only for WASM.
     if env::var("CARGO_CFG_TARGET_ARCH").unwrap() == "wasm32" {
-        base_config.define("USE_EXTERNAL_DEFAULT_CALLBACKS", "1");
         base_config.include("wasm-sysroot");
     }
 
