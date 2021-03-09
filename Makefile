@@ -17,7 +17,7 @@ format:
 
 lint:
 	cargo fmt -- --check
-	cargo clippy
+	cargo clippy --target wasm32-unknown-unknown
 	npx prettier -c .
 
 test:
