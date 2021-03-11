@@ -1,5 +1,5 @@
-/lib
 /node_modules
 /target
 
-package-lock.json
+/lib/secp256k1.wasm
+/package-lock.json
