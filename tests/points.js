@@ -1,8 +1,9 @@
-const tape = require("tape");
-const { fromHex } = require("./util");
-const fpoints = require("./fixtures/points.json");
+import tape from "tape";
+import { fromHex, loadJSON } from "./util.js";
 
-function test(binding) {
+export default function test(binding) {
+  const fpoints = loadJSON("./fixtures/points.json");
+
   tape("isPoint", (t) => {
     for (const f of fpoints.valid.isPoint) {
       const p = fromHex(f.P);
@@ -198,5 +199,3 @@ function test(binding) {
     t.end();
   });
 }
-
-module.exports = test;

@@ -1,6 +1,5 @@
-const tape = require("tape");
-const { fromHex, toHex } = require("./util");
-const fecdsa = require("./fixtures/ecdsa.json");
+import tape from "tape";
+import { fromHex, toHex, loadJSON } from "./util.js";
 
 const buf1 = fromHex(
   "0000000000000000000000000000000000000000000000000000000000000000"
@@ -29,7 +28,9 @@ function corrupt(x) {
   return x;
 }
 
-function test(binding) {
+export default function test(binding) {
+  const fecdsa = loadJSON("./fixtures/ecdsa.json");
+
   tape("sign", (t) => {
     for (const f of fecdsa.valid) {
       const d = fromHex(f.d);
@@ -174,5 +175,3 @@ function test(binding) {
     t.end();
   });
 }
-
-module.exports = test;
