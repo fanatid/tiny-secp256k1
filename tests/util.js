@@ -1,10 +1,4 @@
-import * as fs from "fs";
-import { URL } from "url";
-
-export function loadJSON(location) {
-  const bytes = fs.readFileSync(new URL(location, import.meta.url));
-  return JSON.parse(bytes);
-}
+import { Buffer } from "buffer";
 
 export function fromHex(data) {
   return new Uint8Array(Buffer.from(data, "hex"));

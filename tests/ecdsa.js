@@ -1,5 +1,6 @@
-import tape from "tape";
-import { fromHex, toHex, loadJSON } from "./util.js";
+import { test } from "tape";
+import { fromHex, toHex } from "./util.js";
+import fecdsa from "./fixtures/ecdsa.json";
 
 const buf1 = fromHex(
   "0000000000000000000000000000000000000000000000000000000000000000"
@@ -28,10 +29,8 @@ function corrupt(x) {
   return x;
 }
 
-export default function test(binding) {
-  const fecdsa = loadJSON("./fixtures/ecdsa.json");
-
-  tape("sign", (t) => {
+export default function (binding) {
+  test("sign", (t) => {
     for (const f of fecdsa.valid) {
       const d = fromHex(f.d);
       const m = fromHex(f.m);
@@ -112,7 +111,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("verify", (t) => {
+  test("verify", (t) => {
     for (const f of fecdsa.valid) {
       const d = fromHex(f.d);
       const Q = binding.pointFromScalar(d, true);

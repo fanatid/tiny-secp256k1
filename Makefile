@@ -22,4 +22,4 @@ lint:
 	npx prettier -c .
 
 test:
-	node tests/index.js | npx tap-difflet -p
+	node --experimental-json-modules tests/index.js | npx tap-difflet -p

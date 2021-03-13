@@ -1,10 +1,9 @@
-import tape from "tape";
-import { fromHex, loadJSON } from "./util.js";
+import { test } from "tape";
+import { fromHex } from "./util.js";
+import fpoints from "./fixtures/points.json";
 
-export default function test(binding) {
-  const fpoints = loadJSON("./fixtures/points.json");
-
-  tape("isPoint", (t) => {
+export default function (binding) {
+  test("isPoint", (t) => {
     for (const f of fpoints.valid.isPoint) {
       const p = fromHex(f.P);
       t.equal(
@@ -17,7 +16,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("isPointCompressed", (t) => {
+  test("isPointCompressed", (t) => {
     for (const f of fpoints.valid.isPoint) {
       if (!f.expected) continue;
       const p = fromHex(f.P);
@@ -32,7 +31,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("pointAdd", (t) => {
+  test("pointAdd", (t) => {
     for (const f of fpoints.valid.pointAdd) {
       const p = fromHex(f.P);
       const q = fromHex(f.Q);
@@ -68,7 +67,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("pointAddScalar", (t) => {
+  test("pointAddScalar", (t) => {
     for (const f of fpoints.valid.pointAddScalar) {
       const p = fromHex(f.P);
       const d = fromHex(f.d);
@@ -104,7 +103,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("pointCompress", (t) => {
+  test("pointCompress", (t) => {
     for (const f of fpoints.valid.pointCompress) {
       const p = fromHex(f.P);
       const expected = fromHex(f.expected);
@@ -129,7 +128,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("pointFromScalar", (t) => {
+  test("pointFromScalar", (t) => {
     for (const f of fpoints.valid.pointFromScalar) {
       const d = fromHex(f.d);
       const expected = fromHex(f.expected);
@@ -163,7 +162,7 @@ export default function test(binding) {
     t.end();
   });
 
-  tape("pointMultiply", (t) => {
+  test("pointMultiply", (t) => {
     for (const f of fpoints.valid.pointMultiply) {
       const p = fromHex(f.P);
       const d = fromHex(f.d);
