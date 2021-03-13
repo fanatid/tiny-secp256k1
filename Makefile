@@ -29,8 +29,8 @@ test: test-browser test-node
 test-browser-build:
 	npx webpack build -c tests/browser.webpack.js
 
-test-browser: test-browser-build
+test-browser: build-wasm-debug test-browser-build
 	cat tests/browser/index.js | npx browser-run --static tests/browser | npx tap-difflet -p
 
-test-node:
+test-node: build-wasm-debug
 	node --experimental-json-modules tests/index.js | npx tap-difflet -p
