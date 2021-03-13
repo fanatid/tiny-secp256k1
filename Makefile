@@ -21,5 +21,13 @@ lint:
 	cargo clippy --target wasm32-unknown-unknown
 	npx prettier -c .
 
-test:
+test: test-browser test-node
+
+test-browser-build:
+	npx webpack build -c ./tests/browser.webpack.js
+
+test-browser: test-browser-build
+	cat tests/browser/index.js | npx browser-run --static ./tests/browser/ | npx tap-difflet -p
+
+test-node:
 	node --experimental-json-modules tests/index.js | npx tap-difflet -p

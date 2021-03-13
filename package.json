@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "binaryen": "^100.0.0",
+    "browser-run": "^8.0.0",
     "buffer": "^6.0.3",
     "path-browserify": "^1.0.1",
     "prettier": "^2.2.1",
