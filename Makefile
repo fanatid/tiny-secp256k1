@@ -12,6 +12,9 @@ build-wasm-debug:
 	cargo build --target wasm32-unknown-unknown
 	$(call build-wasm-cp,debug)
 
+clean:
+	rm -rf target node_modules tests/browser
+
 format:
 	cargo-fmt
 	npx prettier -w . 
@@ -24,10 +27,10 @@ lint:
 test: test-browser test-node
 
 test-browser-build:
-	npx webpack build -c ./tests/browser.webpack.js
+	npx webpack build -c tests/browser.webpack.js
 
 test-browser: test-browser-build
-	cat tests/browser/index.js | npx browser-run --static ./tests/browser/ | npx tap-difflet -p
+	cat tests/browser/index.js | npx browser-run --static tests/browser | npx tap-difflet -p
 
 test-node:
 	node --experimental-json-modules tests/index.js | npx tap-difflet -p
