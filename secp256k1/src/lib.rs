@@ -1,7 +1,7 @@
-#![no_std]
+#![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![feature(core_intrinsics)]
 
-#[cfg(not(test))]
+#[cfg(not(any(test, feature = "std")))]
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo) -> ! {
     core::intrinsics::abort()
