@@ -17,7 +17,7 @@ build-wasm-debug:
 	$(call build-wasm-cp,debug)
 
 clean:
-	rm -rf target node_modules tests/browser
+	rm -rf lib/secp256k1* target node_modules tests/browser
 
 format:
 	cargo-fmt
