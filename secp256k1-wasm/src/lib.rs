@@ -1,25 +1,9 @@
 #![no_std]
-#![feature(core_intrinsics)]
-
-#[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
-    core::intrinsics::abort()
-}
 
 #[cfg(not(target_arch = "wasm32"))]
 compile_error!("Only `wasm32` target_arch is supported.");
 
-use secp256k1_sys::{
-    secp256k1_context_no_precomp, secp256k1_context_preallocated_create,
-    secp256k1_context_preallocated_size, secp256k1_context_randomize, secp256k1_ec_pubkey_combine,
-    secp256k1_ec_pubkey_create, secp256k1_ec_pubkey_parse, secp256k1_ec_pubkey_serialize,
-    secp256k1_ec_pubkey_tweak_add, secp256k1_ec_pubkey_tweak_mul, secp256k1_ec_seckey_negate,
-    secp256k1_ec_seckey_tweak_add, secp256k1_ecdsa_sign, secp256k1_ecdsa_signature_normalize,
-    secp256k1_ecdsa_signature_parse_compact, secp256k1_ecdsa_signature_serialize_compact,
-    secp256k1_ecdsa_verify, secp256k1_nonce_function_rfc6979, types::c_void, Context, PublicKey,
-    Signature, SECP256K1_SER_COMPRESSED, SECP256K1_SER_UNCOMPRESSED, SECP256K1_START_SIGN,
-    SECP256K1_START_VERIFY,
-};
+use secp256k1::*;
 
 #[link(wasm_import_module = "./wasm_error.js")]
 extern "C" {
@@ -32,21 +16,6 @@ extern "C" {
     #[link_name = "generateInt32"]
     fn generate_int32() -> i32;
 }
-
-const PRIVATE_KEY_SIZE: usize = 32;
-const PUBLIC_KEY_COMPRESSED_SIZE: usize = 33;
-const PUBLIC_KEY_UNCOMPRESSED_SIZE: usize = 65;
-const TWEAK_SIZE: usize = 32;
-const HASH_SIZE: usize = 32;
-const EXTRA_DATA_SIZE: usize = 32;
-const SIGNATURE_SIZE: usize = 64;
-
-// const ERROR_BAD_PRIVATE: usize = 0;
-const ERROR_BAD_POINT: usize = 1;
-// const ERROR_BAD_TWEAK: usize = 2;
-// const ERROR_BAD_HASH: usize = 3;
-const ERROR_BAD_SIGNATURE: usize = 4;
-// const ERROR_BAD_EXTRA_DATA: usize = 5;
 
 static CONTEXT_BUFFER: [u8; 1114320] = [0; 1114320];
 static mut CONTEXT_SEED: [u8; 32] = [0; 32];
@@ -67,8 +36,6 @@ pub static HASH_INPUT: [u8; HASH_SIZE] = [0; HASH_SIZE];
 pub static EXTRA_DATA_INPUT: [u8; EXTRA_DATA_SIZE] = [0; EXTRA_DATA_SIZE];
 #[no_mangle]
 pub static mut SIGNATURE_INPUT: [u8; SIGNATURE_SIZE] = [0; SIGNATURE_SIZE];
-
-type InvalidInputResult<T> = Result<T, usize>;
 
 macro_rules! jstry {
     ($value:expr) => {
@@ -115,33 +82,6 @@ fn get_context() -> *const Context {
         }
         CONTEXT
     }
-}
-
-unsafe fn pubkey_parse(input: *const u8, inputlen: usize) -> InvalidInputResult<PublicKey> {
-    let mut pk = PublicKey::new();
-    if secp256k1_ec_pubkey_parse(secp256k1_context_no_precomp, &mut pk, input, inputlen) == 1 {
-        Ok(pk)
-    } else {
-        Err(ERROR_BAD_POINT)
-    }
-}
-
-unsafe fn pubkey_serialize(pk: &PublicKey, output: *mut u8, mut outputlen: usize) {
-    let flags = if outputlen == PUBLIC_KEY_COMPRESSED_SIZE {
-        SECP256K1_SER_COMPRESSED
-    } else {
-        SECP256K1_SER_UNCOMPRESSED
-    };
-    assert_eq!(
-        secp256k1_ec_pubkey_serialize(
-            secp256k1_context_no_precomp,
-            output,
-            &mut outputlen,
-            pk.as_ptr() as *const PublicKey,
-            flags,
-        ),
-        1
-    );
 }
 
 #[no_mangle]
