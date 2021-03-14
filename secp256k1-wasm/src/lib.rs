@@ -5,13 +5,13 @@ compile_error!("Only `wasm32` target_arch is supported.");
 
 use secp256k1::*;
 
-#[link(wasm_import_module = "./wasm_error.js")]
+#[link(wasm_import_module = "./validate_error.js")]
 extern "C" {
     #[link_name = "throwError"]
     fn throw_error(errcode: usize);
 }
 
-#[link(wasm_import_module = "./wasm_rand.js")]
+#[link(wasm_import_module = "./rand.js")]
 extern "C" {
     #[link_name = "generateInt32"]
     fn generate_int32() -> i32;

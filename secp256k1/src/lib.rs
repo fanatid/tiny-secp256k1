@@ -15,8 +15,7 @@ pub use secp256k1_sys::{
     secp256k1_ec_seckey_tweak_add, secp256k1_ecdsa_sign, secp256k1_ecdsa_signature_normalize,
     secp256k1_ecdsa_signature_parse_compact, secp256k1_ecdsa_signature_serialize_compact,
     secp256k1_ecdsa_verify, secp256k1_nonce_function_rfc6979, types::c_void, Context, PublicKey,
-    Signature, SECP256K1_START_SIGN,
-    SECP256K1_START_VERIFY,
+    Signature, SECP256K1_START_SIGN, SECP256K1_START_VERIFY,
 };
 use secp256k1_sys::{SECP256K1_SER_COMPRESSED, SECP256K1_SER_UNCOMPRESSED};
 
