@@ -53,15 +53,16 @@ macro_rules! throw_error {
     }};
 }
 
-macro_rules! jstry {
-    ($ctx:expr, $value:expr) => {
-        match $value {
+macro_rules! get_pubkey {
+    ($ctx:expr, $index:expr) => {{
+        let p = get_typed_array(&$ctx, $index)?;
+        match unsafe { pubkey_parse(p.as_ptr(), p.len()) } {
             Ok(value) => value,
             Err(code) => {
                 throw_error!($ctx, code)
             }
-        };
-    };
+        }
+    }};
 }
 
 fn get_typed_array(ctx: &CallContext, index: usize) -> NapiResult<JsTypedArrayValue> {
@@ -80,9 +81,8 @@ fn get_output_buffer(ctx: &CallContext, index: usize) -> NapiResult<JsArrayBuffe
 fn buffer2unknown(buffer: JsArrayBufferValue) -> NapiResult<JsUnknown> {
     let length = buffer.len();
     let buffer = buffer.into_raw();
-    Ok(buffer
-        .into_typedarray(TypedArrayType::Uint8, length, 0)?
-        .into_unknown())
+    let typedarray = buffer.into_typedarray(TypedArrayType::Uint8, length, 0)?;
+    Ok(typedarray.into_unknown())
 }
 
 fn get_context(env: &Env) -> *const Context {
@@ -154,10 +154,8 @@ fn is_point(ctx: CallContext) -> NapiResult<JsBoolean> {
 
 #[js_function(3)]
 fn point_add(ctx: CallContext) -> NapiResult<JsUnknown> {
-    let p1 = get_typed_array(&ctx, 0)?;
-    let pk1 = jstry!(ctx, unsafe { pubkey_parse(p1.as_ptr(), p1.len()) });
-    let p2 = get_typed_array(&ctx, 1)?;
-    let pk2 = jstry!(ctx, unsafe { pubkey_parse(p2.as_ptr(), p2.len()) });
+    let pk1 = get_pubkey!(ctx, 0);
+    let pk2 = get_pubkey!(ctx, 1);
 
     unsafe {
         let mut pk = PublicKey::new();
@@ -180,8 +178,7 @@ fn point_add(ctx: CallContext) -> NapiResult<JsUnknown> {
 
 #[js_function(3)]
 fn point_add_scalar(ctx: CallContext) -> NapiResult<JsUnknown> {
-    let p = get_typed_array(&ctx, 0)?;
-    let mut pk = jstry!(ctx, unsafe { pubkey_parse(p.as_ptr(), p.len()) });
+    let mut pk = get_pubkey!(ctx, 0);
     let tweak = get_typed_array(&ctx, 1)?;
     unsafe {
         if secp256k1_ec_pubkey_tweak_add(
@@ -201,8 +198,7 @@ fn point_add_scalar(ctx: CallContext) -> NapiResult<JsUnknown> {
 
 #[js_function(2)]
 fn point_compress(ctx: CallContext) -> NapiResult<JsUnknown> {
-    let p = get_typed_array(&ctx, 0)?;
-    let pk = jstry!(ctx, unsafe { pubkey_parse(p.as_ptr(), p.len()) });
+    let pk = get_pubkey!(ctx, 0);
     let mut output = get_output_buffer(&ctx, 1)?;
     unsafe {
         pubkey_serialize(&pk, output.as_mut_ptr(), output.len());
@@ -227,8 +223,7 @@ fn point_from_scalar(ctx: CallContext) -> NapiResult<JsUnknown> {
 
 #[js_function(3)]
 fn point_multiply(ctx: CallContext) -> NapiResult<JsUnknown> {
-    let p = get_typed_array(&ctx, 0)?;
-    let mut pk = jstry!(ctx, unsafe { pubkey_parse(p.as_ptr(), p.len()) });
+    let mut pk = get_pubkey!(ctx, 0);
     let tweak = get_typed_array(&ctx, 1)?;
     unsafe {
         if secp256k1_ec_pubkey_tweak_mul(get_context(&ctx.env), &mut pk, tweak.as_ptr()) == 1 {
@@ -329,8 +324,7 @@ fn sign_with_entropy(ctx: CallContext) -> NapiResult<JsTypedArray> {
 #[js_function(4)]
 fn verify(ctx: CallContext) -> NapiResult<JsUnknown> {
     let h = get_typed_array(&ctx, 0)?;
-    let p = get_typed_array(&ctx, 1)?;
-    let pk = jstry!(ctx, unsafe { pubkey_parse(p.as_ptr(), p.len()) });
+    let pk = get_pubkey!(ctx, 1);
     let signature = get_typed_array(&ctx, 2)?;
     let strict = get_number(&ctx, 3)?;
 

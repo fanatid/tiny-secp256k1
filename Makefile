@@ -1,6 +1,10 @@
 build-wasm-cp = mkdir -p lib && cp -f target/wasm32-unknown-unknown/$(1)/secp256k1_wasm.wasm $(build-wasm-location)
 build-wasm-location = lib/secp256k1.wasm
 
+build-node:
+	cargo build --package secp256k1-node --target x86_64-unknown-linux-gnu --release
+	cp target/x86_64-unknown-linux-gnu/release/libsecp256k1_node.so lib/secp256k1-x64-linux.so
+
 build-node-debug:
 	cargo build --package secp256k1-node --target x86_64-unknown-linux-gnu
 	cp target/x86_64-unknown-linux-gnu/debug/libsecp256k1_node.so lib/secp256k1-x64-linux.so
