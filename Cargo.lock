@@ -206,6 +206,7 @@ dependencies = [
 name = "secp256k1-node"
 version = "0.0.0"
 dependencies = [
+ "lazy_static",
  "napi",
  "napi-build",
  "napi-derive",
