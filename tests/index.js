@@ -13,13 +13,36 @@ test.onFinish(() => {
 });
 
 function runTests(secp256k1) {
-  test_ecdsa(secp256k1);
-  test_points(secp256k1);
-  test_privates(secp256k1);
+  if (secp256k1 !== null) {
+    test_ecdsa(secp256k1);
+    test_points(secp256k1);
+    test_privates(secp256k1);
+  }
 }
 
-if (!process.browser) {
-  runTests(secp256k1.__addon);
-}
+runTests(secp256k1.__addon);
 runTests(secp256k1.__wasm);
-runTests(secp256k1);
+
+test("functions exported properly", (t) => {
+  const fnList = [
+    "isPoint",
+    "isPointCompressed",
+    "isPrivate",
+    "pointAdd",
+    "pointAddScalar",
+    "pointCompress",
+    "pointFromScalar",
+    "pointMultiply",
+    "privateAdd",
+    "privateSub",
+    "sign",
+    "signWithEntropy",
+    "verify",
+  ];
+  const source = secp256k1.__initializeContext === secp256k1.__wasm.__initializeContext ? secp256k1.__wasm : secp256k1.__addon;
+  for (const fnName of fnList) {
+    t.equal(secp256k1[fnName], source[fnName]);
+  }
+
+  t.end();
+})
