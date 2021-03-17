@@ -39,10 +39,13 @@ test("functions exported properly", (t) => {
     "signWithEntropy",
     "verify",
   ];
-  const source = secp256k1.__initializeContext === secp256k1.__wasm.__initializeContext ? secp256k1.__wasm : secp256k1.__addon;
+  const source =
+    secp256k1.__initializeContext === secp256k1.__wasm.__initializeContext
+      ? secp256k1.__wasm
+      : secp256k1.__addon;
   for (const fnName of fnList) {
     t.equal(secp256k1[fnName], source[fnName]);
   }
 
   t.end();
-})
+});
