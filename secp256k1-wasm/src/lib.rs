@@ -3,7 +3,18 @@
 #[cfg(not(target_arch = "wasm32"))]
 compile_error!("Only `wasm32` target_arch is supported.");
 
-use secp256k1::*;
+use secp256k1::{
+    c_void, pubkey_parse, pubkey_serialize, secp256k1_context_no_precomp,
+    secp256k1_context_preallocated_create, secp256k1_context_preallocated_size,
+    secp256k1_context_randomize, secp256k1_ec_pubkey_combine, secp256k1_ec_pubkey_create,
+    secp256k1_ec_pubkey_tweak_add, secp256k1_ec_pubkey_tweak_mul, secp256k1_ec_seckey_negate,
+    secp256k1_ec_seckey_tweak_add, secp256k1_ecdsa_sign, secp256k1_ecdsa_signature_normalize,
+    secp256k1_ecdsa_signature_parse_compact, secp256k1_ecdsa_signature_serialize_compact,
+    secp256k1_ecdsa_verify, secp256k1_nonce_function_rfc6979, Context, PublicKey, Signature,
+    ERROR_BAD_SIGNATURE, EXTRA_DATA_SIZE, HASH_SIZE, PRIVATE_KEY_SIZE,
+    PUBLIC_KEY_UNCOMPRESSED_SIZE, SECP256K1_START_SIGN, SECP256K1_START_VERIFY, SIGNATURE_SIZE,
+    TWEAK_SIZE,
+};
 
 #[link(wasm_import_module = "./validate_error.js")]
 extern "C" {
@@ -38,9 +49,6 @@ pub static EXTRA_DATA_INPUT: [u8; EXTRA_DATA_SIZE] = [0; EXTRA_DATA_SIZE];
 pub static mut SIGNATURE_INPUT: [u8; SIGNATURE_SIZE] = [0; SIGNATURE_SIZE];
 
 macro_rules! jstry {
-    ($value:expr) => {
-        jstry!($value, ())
-    };
     ($value:expr, $ret:expr) => {
         match $value {
             Ok(value) => value,
@@ -142,7 +150,7 @@ pub extern "C" fn point_add_scalar(inputlen: usize, outputlen: usize) -> i32 {
 #[export_name = "pointCompress"]
 pub extern "C" fn point_compress(inputlen: usize, outputlen: usize) {
     unsafe {
-        let pk = jstry!(pubkey_parse(PUBLIC_KEY_INPUT.as_ptr(), inputlen));
+        let pk = jstry!(pubkey_parse(PUBLIC_KEY_INPUT.as_ptr(), inputlen), ());
         pubkey_serialize(&pk, PUBLIC_KEY_INPUT.as_mut_ptr(), outputlen);
     }
 }
