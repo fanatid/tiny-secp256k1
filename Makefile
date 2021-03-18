@@ -18,7 +18,7 @@ build-node-debug-%:
 .PHONY: build-wasm
 build-wasm:
 	RUSTFLAGS="-C link-args=-zstack-size=655360" cargo build --package secp256k1-wasm --target wasm32-unknown-unknown --release
-	cp -f target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm lib/secp256k1.wasm
+	mkdir -p lib && cp -f target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm lib/secp256k1.wasm
 	wasm-opt --strip-debug --strip-producers --output lib/secp256k1.wasm lib/secp256k1.wasm
 	node util/wasm-strip.js lib/secp256k1.wasm
 	wasm-opt -O4 --output lib/secp256k1.wasm lib/secp256k1.wasm
@@ -26,11 +26,11 @@ build-wasm:
 .PHONY: build-wasm-debug
 build-wasm-debug:
 	RUSTFLAGS="-C link-args=-zstack-size=655360" cargo build --package secp256k1-wasm --target wasm32-unknown-unknown
-	cp -f target/wasm32-unknown-unknown/debug/secp256k1_wasm.wasm lib/secp256k1.wasm
+	mkdir -p lib && cp -f target/wasm32-unknown-unknown/debug/secp256k1_wasm.wasm lib/secp256k1.wasm
 
 .PHONY: clean
 clean:
-	rm -rf benches/node_modules lib/secp256k1* target node_modules tests/browser
+	rm -rf benches/node_modules lib node_modules target tests/browser
 
 .PHONY: format
 format:
