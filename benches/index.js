@@ -5,7 +5,17 @@ import * as cryptocoinjs_secp256k1 from "./cryptocoinjs_secp256k1.js";
 import noble_secp256k1 from "./noble_secp256k1.js";
 import { fecdsa, fpoints, fprivates } from "./fixtures.js";
 
+// import { loadAddon as _loadAddon } from "../lib/addon.js";
+// function loadAddon(location) {
+//   const path = new URL(location, import.meta.url).pathname;
+//   return _loadAddon(path);
+// }
+
 const modules = [
+  // {
+  //   name: "tiny-secp256k1 (Rust addon, N-API, opt-level-3)",
+  //   secp256k1: loadAddon("./opt-level-3.so"),
+  // },
   {
     name: "tiny-secp256k1 (Rust addon, N-API)",
     secp256k1: tiny_secp256k1.__addon,
