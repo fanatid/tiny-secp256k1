@@ -1,8 +1,9 @@
 .PHONY: build-node-%
 build-node-%: export PAIR = $(subst +, ,$(subst build-node-,,$@))
 build-node-%:
-	cargo build --package secp256k1-node --target $(firstword $(PAIR)) --release
+	cargo build --package secp256k1-node --target $(firstword $(PAIR)) -Z build-std=panic_abort,std --release
 	cp -f target/$(firstword $(PAIR))/release/libsecp256k1_node.so lib/secp256k1-$(lastword $(PAIR)).so
+	strip lib/secp256k1-$(lastword $(PAIR)).so
 
 .PHONY: build-node-debug
 build-node-debug:
