@@ -29,7 +29,7 @@ build-wasm-debug:
 
 .PHONY: clean
 clean:
-	rm -rf lib/secp256k1* target node_modules tests/browser
+	rm -rf benches/node_modules lib/secp256k1* target node_modules tests/browser
 
 .PHONY: format
 format:
