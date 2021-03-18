@@ -1,6 +1,7 @@
 import tiny_secp256k1_prev_js from "tiny-secp256k1/js.js";
 import tiny_secp256k1_prev_native from "tiny-secp256k1/native.js";
 import * as tiny_secp256k1 from "../lib/index.js";
+import * as cryptocoinjs_secp256k1 from "./cryptocoinjs_secp256k1.js";
 import { fecdsa, fpoints, fprivates } from "./fixtures.js";
 
 const modules = [
@@ -20,8 +21,14 @@ const modules = [
     name: "tiny-secp256k1@1.1.6 (elliptic)",
     secp256k1: tiny_secp256k1_prev_js,
   },
-  // cryptocoinjs/secp256k1-node (C++ addon, N-API)
-  // cryptocoinjs/secp256k1-node (elliptic)
+  {
+    name: "secp256k1@4.0.2 (C++ addon, N-API)",
+    secp256k1: cryptocoinjs_secp256k1.native,
+  },
+  {
+    name: "secp256k1@4.0.2 (elliptic)",
+    secp256k1: cryptocoinjs_secp256k1.js,
+  },
 ];
 
 const benchmarks = [
@@ -34,7 +41,7 @@ const benchmarks = [
   {
     name: "isPrivate",
     bench: createBenchmarkFn(fprivates.isPrivate, (secp256k1, f) =>
-      secp256k1.isPrivate(f.P, f.d)
+      secp256k1.isPrivate(f.d)
     ),
   },
   {
@@ -131,9 +138,9 @@ for (const benchmark of benchmarks) {
     benchmarkMaxTime,
   } = {
     warmingUpMinIter: 1,
-    warmingUpMaxTime: millis2nanos(200),
     benchmarkMinIter: 2,
-    benchmarkMaxTime: millis2nanos(500),
+    warmingUpMaxTime: millis2nanos(2000),
+    benchmarkMaxTime: millis2nanos(5000),
     ...benchmark,
   };
 
@@ -145,6 +152,10 @@ for (const benchmark of benchmarks) {
   console.log(lineDash);
   const results = [];
   for (const module of modules) {
+    if (module.secp256k1[name] === undefined) {
+      continue;
+    }
+
     warmingUp(
       () => bench(module.secp256k1),
       warmingUpMinIter,

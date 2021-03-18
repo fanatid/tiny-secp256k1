@@ -9,6 +9,7 @@
     "start": "node --experimental-json-modules index.js"
   },
   "devDependencies": {
+    "secp256k1": "=4.0.2",
     "tiny-secp256k1": "=1.1.6"
   }
 }
