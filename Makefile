@@ -56,9 +56,9 @@ test-browser-build:
 	npx webpack build -c tests/browser.webpack.js
 
 .PHONY: test-browser
-test-browser: build-wasm-debug test-browser-build
+test-browser: build-js build-wasm-debug test-browser-build
 	cat tests/browser/index.js | npx browser-run --static tests/browser | npx tap-difflet -p
 
 .PHONY: test-node
-test-node: build-node-debug build-wasm-debug
+test-node: build-js build-node-debug build-wasm-debug
 	node --experimental-json-modules tests/index.js | npx tap-difflet -p
