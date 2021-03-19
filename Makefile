@@ -1,3 +1,7 @@
+.PHONY: build-js
+build-js:
+	npx tsc
+
 .PHONY: build-node-%
 build-node-%: export PAIR = $(subst +, ,$(subst build-node-,,$@))
 build-node-%:
@@ -30,7 +34,7 @@ build-wasm-debug:
 
 .PHONY: clean
 clean:
-	rm -rf benches/node_modules lib node_modules target tests/browser
+	rm -rf benches/node_modules lib node_modules target tests/browser types
 
 .PHONY: format
 format:

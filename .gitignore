@@ -3,5 +3,6 @@
 /node_modules
 /target
 /tests/browser
+/types
 
 /package-lock.json
