@@ -45,7 +45,8 @@ format:
 .PHONY: lint
 lint:
 	cargo fmt -- --check
-	cargo clippy --target wasm32-unknown-unknown
+	cargo clippy --package secp256k1-node
+	cargo clippy --package secp256k1-wasm --target wasm32-unknown-unknown
 	npx prettier -c .
 
 .PHONY: test
