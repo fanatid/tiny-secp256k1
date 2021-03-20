@@ -52,11 +52,11 @@ lint:
 test: test-browser test-node
 
 .PHONY: test-browser-build
-test-browser-build:
+test-browser-build: build-js build-wasm-debug
 	npx webpack build -c tests/browser.webpack.js
 
 .PHONY: test-browser
-test-browser: build-js build-wasm-debug test-browser-build
+test-browser: test-browser-build
 	cat tests/browser/index.js | npx browser-run --static tests/browser | npx tap-difflet -p
 
 .PHONY: test-node
