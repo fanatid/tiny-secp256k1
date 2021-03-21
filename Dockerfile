@@ -7,12 +7,23 @@ RUN apt update && \
     curl \
     g++ \
     gcc \
-    git \
+    git \make \
+    wget \
+    # LLVM script
     gnupg \
     lsb-release \
-    make \
     software-properties-common \
-    wget && \
+    # Electron
+    libasound2 \
+    libgdk-pixbuf2.0-0 \
+    libgtk-3-0 \
+    libnss3 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxi6 \
+    libxss1 \
+    libxtst6 \
+    xvfb && \
   # Install LLVM:12
   curl -sSf https://apt.llvm.org/llvm.sh | bash -s -- 12 && \
   ln -s $(which clang-12) /usr/bin/clang && \
@@ -34,3 +45,5 @@ RUN apt update && \
   rm -rf /binaryen && \
   # Remove apt files
   rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+CMD Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & export DISPLAY=':99.0' && bash
