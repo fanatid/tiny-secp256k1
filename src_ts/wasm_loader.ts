@@ -44,5 +44,4 @@ interface Secp256k1WASM {
   verify: (Q: number, strict: number) => number;
 }
 
-const wasm: Secp256k1WASM = (instance.exports as unknown) as Secp256k1WASM;
-export default wasm;
+export default (instance.exports as unknown) as Secp256k1WASM;
