@@ -17,7 +17,7 @@ function getLibExt(): string {
     case "sunos":
       return "so";
     default:
-      return "¯_(ツ)_/¯";
+      return "¯\\_(ツ)_/¯";
   }
 }
 
