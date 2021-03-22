@@ -32,12 +32,12 @@ function getLocalBuildLibLocation(mode: string): string {
 }
 
 function dlopen(location: string): Secp256k1InternalApi {
-  // Suppress: error TS2339: Property 'dlopen' does not exist on type 'Process'.
   const module = { exports: { throwError, generateSeed } };
+  // Suppress TS2339: Property 'dlopen' does not exist on type 'Process'.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   process.dlopen(module, location);
-  // @ts-ignore
-  return module.exports;
+  return (module.exports as unknown) as Secp256k1InternalApi;
 }
 
 export function loadAddon(location: string): Secp256k1Api | null {

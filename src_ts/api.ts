@@ -179,7 +179,7 @@ export default function createApi(
       h: Uint8Array,
       Q: Uint8Array,
       signature: Uint8Array,
-      strict: boolean = false
+      strict = false
     ): boolean {
       validate.validateHash(h);
       validate.validatePoint(Q);
