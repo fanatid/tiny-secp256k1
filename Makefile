@@ -39,6 +39,7 @@ clean:
 .PHONY: format
 format:
 	cargo-fmt
+	npx eslint benches/*.{js,json} src_ts/*.ts tests/*.js util/*.js *.json *.cjs --fix
 	npx sort-package-json package.json benches/package.json
 
 .PHONY: lint
@@ -46,6 +47,7 @@ lint:
 	cargo fmt -- --check
 	cargo clippy --package secp256k1-node
 	cargo clippy --package secp256k1-wasm --target wasm32-unknown-unknown
+	npx eslint benches/*.{js,json} src_ts/*.ts tests/*.js util/*.js *.json *.cjs
 
 .PHONY: test
 test: test-browser test-node
