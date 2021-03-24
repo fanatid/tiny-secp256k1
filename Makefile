@@ -49,6 +49,7 @@ build-wasm-debug:
 clean:
 	rm -rf \
 		benches/node_modules \
+		examples/random-in-node/node_modules \
 		examples/react-app/dist/*.js \
 		examples/react-app/dist/*.wasm \
 		examples/react-app/node_modules \
