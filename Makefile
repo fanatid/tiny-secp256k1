@@ -34,7 +34,16 @@ build-wasm-debug:
 
 .PHONY: clean
 clean:
-	rm -rf benches/node_modules lib node_modules target tests/browser types
+	rm -rf \
+		benches/node_modules \
+		examples/react-app/dist/*.js \
+		examples/react-app/dist/*.wasm \
+		examples/react-app/node_modules \
+		lib \
+		node_modules \
+		target \
+		tests/browser \
+		types
 
 .PHONY: format
 format:

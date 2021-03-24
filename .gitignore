@@ -1,4 +1,6 @@
 /benches/node_modules
+/examples/react-app/dist
+/examples/react-app/node_modules
 /lib
 /node_modules
 /target
