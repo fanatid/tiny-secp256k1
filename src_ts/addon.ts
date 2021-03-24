@@ -1,4 +1,5 @@
 import { join } from "path";
+// import { URL } from "url";
 import createApi from "./api.js";
 import { Secp256k1InternalApi, Secp256k1Api } from "./api.js";
 import { generateSeed } from "./rand.js";
@@ -23,12 +24,14 @@ function getLibExt(): string {
 
 function getPrebuildLibLocation(): string {
   const name = `secp256k1-${process.arch}-${process.platform}.${getLibExt()}`;
-  return new URL(name, import.meta.url).pathname;
+  // return new URL(name, import.meta.url).pathname;
+  return require.resolve(name);
 }
 
 function getLocalBuildLibLocation(mode: string): string {
   const path = join("..", "target", mode, "libsecp256k1_node.so");
-  return new URL(path, import.meta.url).pathname;
+  // return new URL(path, import.meta.url).pathname;
+  return require.resolve(path);
 }
 
 function dlopen(location: string): Secp256k1InternalApi {

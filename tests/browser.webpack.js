@@ -1,15 +1,12 @@
-import { createRequire } from "module";
-import { URL } from "url";
-import webpack from "webpack";
+const path = require("path");
+const webpack = require("webpack");
 
-const require = createRequire(import.meta.url);
-
-export default {
+module.exports = {
   target: "web",
   mode: "development",
   entry: "./tests/index.js",
   output: {
-    path: new URL("browser", import.meta.url).pathname,
+    path: path.resolve(__dirname, "browser"),
     filename: "index.js",
   },
   experiments: {
