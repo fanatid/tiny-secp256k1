@@ -1,17 +1,17 @@
 import { Buffer } from "buffer";
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import CheckIcon from "@material-ui/icons/Check";
+import Checkbox from "@material-ui/core/Checkbox";
 import CloseIcon from "@material-ui/icons/Close";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import { withStyles } from "@material-ui/core/styles";
 
 import * as _secp256k1 from "../../";
 import * as _validate from "../../lib/validate.js";
