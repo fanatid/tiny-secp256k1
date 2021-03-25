@@ -48,7 +48,9 @@ build-wasm-debug:
 .PHONY: clean
 clean:
 	rm -rf \
+		.nyc_output \
 		benches/node_modules \
+		coverage \
 		examples/random-in-node/node_modules \
 		examples/react-app/dist/*.js \
 		examples/react-app/dist/*.wasm \
