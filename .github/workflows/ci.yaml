@@ -1,0 +1,160 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  CI: true
+
+jobs:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Add target wasm32-unknown-unknown
+      run: rustup target add wasm32-unknown-unknown
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - name: Add components clippy and rustfmt
+      run: rustup component add clippy rustfmt
+
+    - name: Run lint
+      run: |
+        make lint
+
+  test-browser:
+    name: Test in browser (electron)
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Add target wasm32-unknown-unknown
+      run: rustup target add wasm32-unknown-unknown
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - uses: actions/cache@v2
+      id: binaryen-cache
+      with:
+        path: binaryen-version_100
+        key: binaryen-version_100
+
+    - name: Install wasm-opt (binaryen)
+      if: steps.binaryen-cache.outputs.cache-hit != 'true'
+      run: |
+        wget https://github.com/WebAssembly/binaryen/releases/download/version_100/binaryen-version_100-x86_64-linux.tar.gz
+        tar zxvf binaryen-version_100-x86_64-linux.tar.gz binaryen-version_100/bin/wasm-opt
+
+    - name: Build wasm
+      run: export PATH=$PATH:./binaryen-version_100/bin/ && make build-wasm
+
+    - name: Build JS
+      run: make build-js-browser
+
+    - name: Run tests
+      env:
+        DISPLAY: :99.0
+      run: |
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        make test-browser-build-raw
+        make test-browser-raw-ci
+
+    - name: Upload wasm
+      uses: actions/upload-artifact@v2
+      with:
+        name: wasm
+        path: lib.node/secp256k1.wasm
+
+  test-node:
+    name: Test in Node.js
+    needs: [test-browser]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Add target wasm32-unknown-unknown
+      run: rustup target add wasm32-unknown-unknown
+
+    - name: Install Node.js@12.0.0
+      uses: actions/setup-node@v2
+      with:
+        node-version: 12.0.0
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - name: Add component rust-src
+      run: rustup component add rust-src
+      
+    - name: Download compiled wasm
+      uses: actions/download-artifact@v2
+      with:
+        name: wasm
+        path: lib.node
+
+    - name: Build JS
+      run: make build-js-node
+
+    - name: Add target x86_64-unknown-linux-musl and musl-tools
+      if: runner.os == 'Linux'
+      run: |
+        rustup target add x86_64-unknown-linux-musl
+        sudo apt-get install musl-tools
+
+    - name: Build addon (Linux)
+      if: runner.os == 'Linux'
+      run: make build-node-x86_64-unknown-linux-musl+x64-linux.so
+
+    - name: Build addon (macOS)
+      if: runner.os == 'macOS'
+      run: make build-node-x86_64-apple-darwin+x64-darwin.dylib
+
+    - name: Build addon (Windows)
+      if: runner.os == 'Windows'
+      run: make build-node-x86_64-pc-windows-msvc+x64-win32.dll
+
+    - name: Run tests and coverage
+      run: |
+        make test-node-raw-ci
+        make test-node-coverage-raw
+
+    - name: Upload addon (Linux)
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v2
+      with:
+        name: secp256k1-x64-linux.so
+        path: lib.node/secp256k1-x64-linux.so
+
+    - name: Upload addon (macOS)
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v2
+      with:
+        name: secp256k1-x64-darwin.dylib
+        path: lib.node/secp256k1-x64-darwin.dylib
+
+    - name: Upload addon (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: secp256k1-x64-win32.dll
+        path: lib.node/secp256k1-x64-win32.dll
