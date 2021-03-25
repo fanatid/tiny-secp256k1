@@ -87,3 +87,8 @@ test-browser: test-browser-build
 .PHONY: test-node
 test-node: build-js-node build-node-debug build-wasm-debug
 	npx babel-node -b @babel/preset-env tests/index.js | npx tap-difflet -p
+
+.PHONY: test-node-coverage
+test-node-coverage: build-js-node build-node-debug build-wasm-debug
+	npx nyc npx babel-node -b @babel/preset-env tests/index.js >/dev/null
+	npx nyc report --reporter=html --reporter=text
