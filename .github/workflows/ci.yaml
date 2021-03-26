@@ -30,7 +30,6 @@ jobs:
 
   test-browser:
     name: Test in browser (electron)
-    needs: [lint]
     runs-on: ubuntu-latest
     steps:
     - name: Fetch code
@@ -91,9 +90,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
-
-    - name: Add target wasm32-unknown-unknown
-      run: rustup target add wasm32-unknown-unknown
 
     - name: Install Node.js@12.0.0
       uses: actions/setup-node@v2
@@ -159,6 +155,76 @@ jobs:
         name: secp256k1-x64-win32.dll
         path: lib.node/secp256k1-x64-win32.dll
 
+  package:
+    name: Create package
+    needs: [test-node]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - name: Build JS
+      run: make build-js
+
+    - name: Download compiled Linux addon
+      uses: actions/download-artifact@v2
+      with:
+        name: secp256k1-x64-linux.so
+        path: lib.node
+
+    - name: Download compiled macOS addon
+      uses: actions/download-artifact@v2
+      with:
+        name: secp256k1-x64-darwin.dylib
+        path: lib.node
+
+    - name: Download compiled Windows addon
+      uses: actions/download-artifact@v2
+      with:
+        name: secp256k1-x64-win32.dll
+        path: lib.node
+
+    - name: Download compiled wasm
+      uses: actions/download-artifact@v2
+      with:
+        name: wasm
+        path: lib.node
+
+    - name: Create package
+      run: |
+        cp lib.node/secp256k1.wasm lib.browser/secp256k1.wasm
+        mkdir package
+        # Copy LICENSE, README.md
+        cp LICENSE package/LICENSE
+        cp README.md package/README.md
+        # Copy js, addon, wasm
+        cp -r lib.browser package/lib.browser
+        cp -r lib.node package/lib.node
+        # Copy package.json, on-install.js
+        cp package.json package/package.json
+        node util/update-package-json.js package/package.json
+        cp util/on-install.js package/on-install.js
+        # Copy addon source
+        cp -r secp256k1 package/secp256k1
+        cp -r secp256k1-node package/secp256k1-node
+        cp -r secp256k1-wasm package/secp256k1-wasm
+        cp Cargo.lock package/Cargo.lock
+        cp Cargo.toml package/Cargo.toml
+        # Run `npm pack`
+        cd package
+        npm pack
+
+    - name: Upload package
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: package/tiny-secp256k1-*
+
   benchmark:
     name: Benchmark
     needs: [test-node]
@@ -169,9 +235,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
-
-    - name: Add target wasm32-unknown-unknown
-      run: rustup target add wasm32-unknown-unknown
 
     - name: Install Node.js dependencies
       run: npm install

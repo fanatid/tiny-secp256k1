@@ -11,8 +11,8 @@ function getName() {
     case "sunos":
       return "libsecp256k1_node.so";
     default:
-      throw new Error(`Unknow platform: ${process.platform}`)
+      throw new Error(`Unknow platform: ${process.platform}`);
   }
 }
 
-process.stdout.write(getName())
+process.stdout.write(getName());
