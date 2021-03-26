@@ -105,7 +105,7 @@ jobs:
 
     - name: Add component rust-src
       run: rustup component add rust-src
-      
+
     - name: Download compiled wasm
       uses: actions/download-artifact@v2
       with:
@@ -158,3 +158,43 @@ jobs:
       with:
         name: secp256k1-x64-win32.dll
         path: lib.node/secp256k1-x64-win32.dll
+
+  benchmark:
+    name: Benchmark
+    needs: [test-node]
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Add target wasm32-unknown-unknown
+      run: rustup target add wasm32-unknown-unknown
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - name: Build JS
+      run: make build-js
+
+    - name: Download compiled addon
+      uses: actions/download-artifact@v2
+      with:
+        name: secp256k1-x64-linux.so
+        path: lib.node
+
+    - name: Download compiled wasm
+      uses: actions/download-artifact@v2
+      with:
+        name: wasm
+        path: lib.node
+
+    - name: Install benchmark dependencies
+      run: cd benches && npm install
+
+    - name: Run benchmark
+      run: |
+        cp lib.node/secp256k1.wasm lib.browser/secp256k1.wasm
+        cd benches && npm start
