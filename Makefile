@@ -13,9 +13,9 @@ build-js-browser:
 build-js-node:
 	npx tsc --project tsconfig.node.json && rm lib.node/*.browser.js
 
-.PHONY: build-node-%
-build-node-%: export PAIR = $(subst +, ,$(subst build-node-,,$@))
-build-node-%:
+.PHONY: build-addon-%
+build-addon-%: export PAIR = $(subst +, ,$(subst build-addon-,,$@))
+build-addon-%:
 	$(if $(findstring musl,$(firstword $(PAIR))),RUSTFLAGS="-C target-feature=-crt-static",) cargo build \
 		--package secp256k1-node \
 		--target $(firstword $(PAIR)) \
@@ -24,13 +24,13 @@ build-node-%:
 	mkdir -p lib.node && cp -f target/$(firstword $(PAIR))/release/`node util/addon-target-name.js` lib.node/secp256k1-$(lastword $(PAIR))
 	strip $(if $(findstring Darwin,$(shell uname -s)),-Sx,--strip-all) lib.node/secp256k1-$(lastword $(PAIR))
 
-.PHONY: build-node-debug
-build-node-debug:
+.PHONY: build-addon-debug
+build-addon-debug:
 	cargo build --package secp256k1-node
 
-.PHONY: build-node-debug-%
-build-node-debug-%: export PAIR = $(subst +, ,$(subst build-node-debug-,,$@))
-build-node-debug-%:
+.PHONY: build-addon-debug-%
+build-addon-debug-%: export PAIR = $(subst +, ,$(subst build-addon-debug-,,$@))
+build-addon-debug-%:
 	cargo build --package secp256k1-node --target $(firstword $(PAIR))
 	mkdir -p lib.node && cp -f target/$(firstword $(PAIR))/debug/`node util/addon-target-name.js` lib.node/secp256k1-$(lastword $(PAIR))
 
@@ -115,7 +115,7 @@ test-node-raw-ci:
 	$(test_node_raw) --no-ansi --no-progress
 
 .PHONY: test-node
-test-node: build-js-node build-node-debug build-wasm-debug test-node-raw
+test-node: build-js-node build-addon-debug build-wasm-debug test-node-raw
 
 .PHONY: test-node-coverage-raw
 test-node-coverage-raw:

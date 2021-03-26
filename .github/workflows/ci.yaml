@@ -123,15 +123,15 @@ jobs:
 
     - name: Build addon (Linux)
       if: runner.os == 'Linux'
-      run: make build-node-x86_64-unknown-linux-musl+x64-linux.so
+      run: make build-addon-x86_64-unknown-linux-musl+x64-linux.so
 
     - name: Build addon (macOS)
       if: runner.os == 'macOS'
-      run: make build-node-x86_64-apple-darwin+x64-darwin.dylib
+      run: make build-addon-x86_64-apple-darwin+x64-darwin.dylib
 
     - name: Build addon (Windows)
       if: runner.os == 'Windows'
-      run: make build-node-x86_64-pc-windows-msvc+x64-win32.dll
+      run: make build-addon-x86_64-pc-windows-msvc+x64-win32.dll
 
     - name: Run tests and coverage
       run: |
