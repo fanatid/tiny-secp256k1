@@ -28,7 +28,7 @@ build-wasm:
 	RUSTFLAGS="-C link-args=-zstack-size=655360" cargo build --package secp256k1-wasm --target wasm32-unknown-unknown --release
 	mkdir -p lib && cp -f target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm lib/secp256k1.wasm
 	wasm-opt --strip-debug --strip-producers --output lib/secp256k1.wasm lib/secp256k1.wasm
-	npx babel-node -b @babel/preset-env util/wasm-strip.js lib/secp256k1.wasm
+	node util/wasm-strip.js lib/secp256k1.wasm
 	wasm-opt -O4 --output lib/secp256k1.wasm lib/secp256k1.wasm
 
 .PHONY: build-wasm-debug
@@ -58,7 +58,11 @@ eslint_files = benches/*.{js,json} examples/**/*.{js,json} src_ts/*.ts tests/*.j
 format:
 	cargo-fmt
 	npx eslint $(eslint_files) --fix
-	npx sort-package-json package.json benches/package.json
+	npx sort-package-json \
+		package.json \
+		benches/package.json \
+		examples/random-in-node/package.json \
+		examples/react-app/package.json
 
 .PHONY: lint
 lint:
@@ -90,7 +94,7 @@ test-browser-raw-ci:
 .PHONY: test-browser
 test-browser: test-browser-build test-browser-raw
 
-test_node_raw = npx nyc --silent npx babel-node -b @babel/preset-env tests/index.js | npx tap-summary
+test_node_raw = npx nyc --silent node --experimental-json-modules tests/index.js | npx tap-summary
 
 .PHONY: test-node-raw
 test-node-raw:
