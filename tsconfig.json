@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2015",
-    "module": "commonjs",
     "checkJs": true,
     "declaration": true,
     "declarationDir": "./types",
-    "outDir": "./lib.node",
+    "outDir": "./lib",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

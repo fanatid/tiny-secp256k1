@@ -2,7 +2,7 @@
 const { exec } = require("child_process");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const addon = require("./lib.node/addon.js");
+const addon = require("./lib/addon.js");
 if (addon.default === null) {
   const cmd = "cargo build --package secp256k1-node --release";
   exec(cmd, (error, _stdout, stderr) => {
