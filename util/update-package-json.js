@@ -12,6 +12,7 @@ const fields = [
   "bugs",
   "repository",
   "license",
+  "type",
   "main",
   "browser",
   "types",
