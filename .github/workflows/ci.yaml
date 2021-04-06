@@ -93,7 +93,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - macos-latest
+          - "macos-11.0" # At 6 Apr. 2021, macos-latest is macos-10.15
           - ubuntu-latest
           - windows-latest
     steps:
@@ -102,8 +102,13 @@ jobs:
       with:
         fetch-depth: 1
 
-    - name: Install Rust nightly with rust-src
+    - name: Install Rust nightly with rust-src (not macOS)
+      if: runner.os != 'macOS'
       run: rustup toolchain install nightly --component rust-src
+
+    - name: Install Rust nightly with rust-src and aarch64-apple-darwin
+      if: runner.os == 'macOS'
+      run: rustup toolchain install nightly --component rust-src --target aarch64-apple-darwin
 
     - name: Install Node.js@${{ env.NODE_VERSION }}
       uses: actions/setup-node@v2
@@ -134,7 +139,9 @@ jobs:
 
     - name: Build addon (macOS)
       if: runner.os == 'macOS'
-      run: make build-addon-x86_64-apple-darwin+x64-darwin.dylib
+      run: |
+        make build-addon-aarch64-apple-darwin+arm64-darwin.dylib
+        make build-addon-x86_64-apple-darwin+x64-darwin.dylib
 
     - name: Build addon (Windows)
       if: runner.os == 'Windows'
@@ -152,7 +159,14 @@ jobs:
         name: secp256k1-x64-linux.so
         path: lib/secp256k1-x64-linux.so
 
-    - name: Upload addon (macOS)
+    - name: Upload addon (macOS arm64)
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v2
+      with:
+        name: secp256k1-arm64-darwin.dylib
+        path: lib/secp256k1-arm64-darwin.dylib
+
+    - name: Upload addon (macOS x86_64)
       if: runner.os == 'macOS'
       uses: actions/upload-artifact@v2
       with:
@@ -193,7 +207,13 @@ jobs:
         name: secp256k1-x64-linux.so
         path: lib
 
-    - name: Download compiled macOS addon
+    - name: Download compiled macOS arm64 addon
+      uses: actions/download-artifact@v2
+      with:
+        name: secp256k1-arm64-darwin.dylib
+        path: lib
+
+    - name: Download compiled macOS x86_64 addon
       uses: actions/download-artifact@v2
       with:
         name: secp256k1-x64-darwin.dylib
